@@ -37,7 +37,7 @@ write_output_to_file( )
 { echo "writing output to $2"
   output=$1
   file=$2
-  echo `jq "$output"` > $file 1>&2
+  echo $output | jq > $file
 }
 
 port_forward_assignment( )
