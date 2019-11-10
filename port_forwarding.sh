@@ -50,9 +50,9 @@ port_forward_assignment( )
     client_id=`head -n 100 /dev/urandom | shasum -a 256 | tr -d " -"`
   fi
   if [ "$(uname)" == "FreeBSD" ]; then
-    client_id=`head -n 100 /dev/unradom | sha | tr -d " -"`
+    client_id=`head -n 100 /dev/urandom | sha | tr -d " -"`
   fi
-  
+
   json=`curl "http://209.222.18.222:2000/?client_id=$client_id" 2>/dev/null`
   if [ "$json" == "" ]; then
     echo "Port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding"
