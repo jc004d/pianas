@@ -1,0 +1,55 @@
+1. install jail
+2. jls
+   jexec 1 tcsh
+   service transmission stop
+   vi /usr/local/etc/transmission/home/settings.json
+   service transmission start
+   exit
+
+3. jails/transmission/mount points
+   add mount point, set transmission via ui to dl to it
+   edit to check allow_tun
+
+
+3. openvpn
+   
+   ee /usr/local/etc/pkg/repos/FreeBSD.conf
+   change no to yes
+   pkg update
+   pkg upgrade
+   pkg install openvpn curl unzip nano bash jq
+   echo 'openvpn_enable="YES"' >> /etc/rc.conf
+   echo 'openvpn_configfile="/usr/local/etc/openvpn/openvpn.conf"' >> /etc/rc.conf
+
+   mkdir -p /usr/local/etc/openvpn
+   cd /usr/local/etc/openvpn
+
+   curl -o openvpn.zip https://www.privateinternetaccess.com/openvpn/openvpn.zip
+   curl -kL https://privateinternetaccess.com/installer/port_forwarding.sh -o port_forwarding.sh
+
+   chmod +x port_forwarding.sh   unzip openvpn.zip
+
+   cp CA\ Vancouver.ovpn openvpn.conf
+   touch credentials
+   touch openvpn.log
+   chmod 600 credentials
+   echo "username" >> credentials
+   echo "password" >> credentials
+
+   cat > openvpn.conf << EOL
+   ca /usr/local/etc/openvpn/ca.rsa.2048.crt
+   auth-user-pass /usr/local/etc/openvpn/credentials
+   crl-verify /usr/local/etc/openvpn/crl.rsa.2048.pem
+   verb 3
+   log /usr/local/etc/openvpn/openvpn.log
+   script-security 2
+   up /usr/local/etc/openvpn/tpf.sh
+   EOL
+
+   mv ./ipfw.rules /etc/ipfw.rules
+
+   echo 'firewall_enable="YES"' >> /etc/rc.conf
+   echo 'firewall_script="/etc/ipfw.rules"' >> /etc/rc.conf
+
+   service ipfw start
+
